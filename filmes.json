@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "titulo": "Interestelar",
+    "ano": 2014,
+    "generos": ["Ficção científica", "Drama"],
+    "nota": 8.7,
+    "destaque": true,
+    "capa": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+    "sinopse": "Uma equipe de exploradores viaja através de um buraco de minhoca em busca de um novo lar para a humanidade.",
+    "trailer": "https://www.youtube.com/results?search_query=Interestelar+trailer+oficial",
+    "assistir": "https://www.justwatch.com/br/filme/interstellar"
+  },
+  {
+    "id": 2,
+    "titulo": "O Diabo Veste Prada",
+    "ano": 2006,
+    "generos": ["Comédia", "Drama"],
+    "nota": 8.1,
+    "destaque": true,
+    "capa": "https://image.tmdb.org/t/p/w500/8912As6gZx5L5v1Xj1tqvM6d4nF.jpg",
+    "sinopse": "Uma jovem jornalista consegue um emprego em uma influente revista de moda e descobre que seu novo mundo tem exigências inesperadas.",
+    "trailer": "https://www.youtube.com/results?search_query=O+Diabo+Veste+Prada+trailer",
+    "assistir": "https://www.justwatch.com/br/filme/the-devil-wears-prada"
+  },
+  {
+    "id": 3,
+    "titulo": "Interestelar: Exemplo",
+    "ano": 2024,
+    "generos": ["Ação", "Ficção científica"],
+    "nota": 7.8,
+    "destaque": true,
+    "capa": "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=700&q=80",
+    "sinopse": "Filme de exemplo para você testar o catálogo. Substitua este registro pelo filme que quiser cadastrar.",
+    "trailer": "https://www.youtube.com/results?search_query=trailer+filme+acao",
+    "assistir": "https://www.justwatch.com/br"
+  },
+  {
+    "id": 4,
+    "titulo": "A Noite do Terror",
+    "ano": 2025,
+    "generos": ["Terror", "Suspense"],
+    "nota": 7.4,
+    "destaque": false,
+    "capa": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80",
+    "sinopse": "Um título de exemplo para demonstrar a categoria de terror e o funcionamento dos filtros.",
+    "trailer": "https://www.youtube.com/results?search_query=trailer+filme+terror",
+    "assistir": "https://www.justwatch.com/br"
+  },
+  {
+    "id": 5,
+    "titulo": "Amor em Cena",
+    "ano": 2025,
+    "generos": ["Romance", "Comédia"],
+    "nota": 8.0,
+    "destaque": false,
+    "capa": "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=700&q=80",
+    "sinopse": "Outro filme de exemplo para testar o filtro de romance e o layout do catálogo.",
+    "trailer": "https://www.youtube.com/results?search_query=trailer+filme+romance",
+    "assistir": "https://www.justwatch.com/br"
+  },
+  {
+    "id": 6,
+    "titulo": "Missão Impossível",
+    "ano": 2023,
+    "generos": ["Ação", "Aventura"],
+    "nota": 8.2,
+    "destaque": false,
+    "capa": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=700&q=80",
+    "sinopse": "Um agente enfrenta uma missão de alto risco em uma aventura repleta de ação.",
+    "trailer": "https://www.youtube.com/results?search_query=Missao+Impossivel+trailer",
+    "assistir": "https://www.justwatch.com/br"
+  },
+  {
+    "id": 7,
+    "titulo": "O Grande Filme",
+    "ano": 2022,
+    "generos": ["Drama"],
+    "nota": 7.9,
+    "destaque": false,
+    "capa": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80",
+    "sinopse": "Título demonstrativo para o catálogo. Você pode editar todos os dados diretamente no arquivo filmes.json.",
+    "trailer": "https://www.youtube.com/results?search_query=trailer+filme+drama",
+    "assistir": "https://www.justwatch.com/br"
+  },
+  {
+    "id": 8,
+    "titulo": "O Mundo dos Sonhos",
+    "ano": 2021,
+    "generos": ["Fantasia", "Aventura"],
+    "nota": 8.3,
+    "destaque": false,
+    "capa": "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?auto=format&fit=crop&w=700&q=80",
+    "sinopse": "Uma aventura fantástica para completar a primeira demonstração do catálogo.",
+    "trailer": "https://www.youtube.com/results?search_query=trailer+filme+fantasia",
+    "assistir": "https://www.justwatch.com/br"
+  }
+]
