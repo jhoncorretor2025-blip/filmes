@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Catálogo de filmes com informações, trailers e links para serviços de terceiros.">
+  <meta name="description" content="Catálogo pessoal de filmes com notas, trailers e links para serviços de terceiros.">
   <meta name="theme-color" content="#0b1020">
-  <title>CineLink — Catálogo de Filmes</title>
+  <title>CineLink — Meu Catálogo de Filmes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
         <span class="logo-mark">▶</span>
         <span>Cine<span>Link</span></span>
       </a>
-      <nav class="nav-links" aria-label="Navegação principal">
+      <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
         <a href="#inicio">Início</a>
         <a href="#catalogo">Filmes</a>
         <a href="#generos">Gêneros</a>
@@ -31,29 +31,25 @@
     <section class="hero">
       <div class="container hero-content">
         <div class="hero-copy">
-          <span class="eyebrow">🎬 Seu catálogo de filmes</span>
+          <span class="eyebrow">🎬 Meu catálogo de filmes</span>
           <h1>Encontre seu próximo filme favorito.</h1>
-          <p>Pesquise filmes, descubra novidades e encontre trailers e opções de onde assistir em serviços de terceiros.</p>
+          <p>Uma lista organizada dos filmes que você já assistiu, suas notas e os títulos que ainda quer assistir.</p>
           <div class="hero-search">
             <span>⌕</span>
             <input id="searchInput" type="search" placeholder="Buscar por título, gênero ou ano..." autocomplete="off">
             <button id="clearSearch" type="button" aria-label="Limpar busca">×</button>
           </div>
           <div class="quick-tags" id="quickTags">
-            <button data-genre="Ação">Ação</button>
-            <button data-genre="Comédia">Comédia</button>
+            <button data-genre="Ficção científica / Mente">Ficção científica</button>
+            <button data-genre="Drama / Emoção">Drama</button>
             <button data-genre="Romance">Romance</button>
-            <button data-genre="Terror">Terror</button>
+            <button data-genre="Suspense / Terror">Suspense</button>
           </div>
         </div>
-        <div class="hero-poster" aria-hidden="true">
-          <div class="poster-glow"></div>
-          <div class="poster-card poster-back"></div>
-          <div class="poster-card poster-front">
-            <div class="poster-icon">▶</div>
-            <strong>CineLink</strong>
-            <small>Filmes & descobertas</small>
-          </div>
+        <div class="hero-text-card" aria-hidden="true">
+          <span>⭐</span>
+          <strong>Suas avaliações</strong>
+          <small>Organizadas em um só lugar</small>
         </div>
       </div>
     </section>
@@ -62,7 +58,7 @@
       <div class="section-heading">
         <div>
           <span class="eyebrow">CATÁLOGO</span>
-          <h2>Filmes em destaque</h2>
+          <h2>Meus filmes</h2>
         </div>
         <div class="controls">
           <select id="genreFilter" aria-label="Filtrar por gênero">
@@ -110,7 +106,7 @@
     <div class="container footer-inner">
       <div>
         <a class="logo" href="#inicio"><span class="logo-mark">▶</span><span>Cine<span>Link</span></span></a>
-        <p>Catálogo independente de informações e links externos.</p>
+        <p>Catálogo pessoal de filmes e links externos.</p>
       </div>
       <div class="footer-note">
         <strong>Importante</strong>
