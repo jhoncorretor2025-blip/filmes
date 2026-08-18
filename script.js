@@ -60,18 +60,24 @@ function montarFiltros() {
 function filmesFiltrados() {
   const termo = state.busca.trim().toLowerCase();
   let lista = state.filmes.filter(filme => {
-    const texto = `${filme.titulo} ${filme.ano} ${(filme.generos || []).join(' ')}`.toLowerCase();
+    const texto = `${filme.titulo} ${filme.ano || ''} ${(filme.generos || []).join(' ')} ${filme.status || ''}`.toLowerCase();
     const bateBusca = !termo || texto.includes(termo);
     const bateGenero = state.genero === 'Todos' || (filme.generos || []).includes(state.genero);
     return bateBusca && bateGenero;
   });
 
-  if (state.ordenacao === 'recentes') lista.sort((a, b) => b.ano - a.ano);
-  if (state.ordenacao === 'nota') lista.sort((a, b) => b.nota - a.nota);
+  if (state.ordenacao === 'recentes') lista.sort((a, b) => (b.ano || 0) - (a.ano || 0));
+  if (state.ordenacao === 'nota') lista.sort((a, b) => (b.nota || 0) - (a.nota || 0));
   if (state.ordenacao === 'titulo') lista.sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR'));
-  if (state.ordenacao === 'destaque') lista.sort((a, b) => Number(b.destaque) - Number(a.destaque) || b.nota - a.nota);
+  if (state.ordenacao === 'destaque') lista.sort((a, b) => Number(b.destaque) - Number(a.destaque) || (b.nota || 0) - (a.nota || 0));
 
   return lista;
+}
+
+function notaTexto(filme) {
+  if (filme.nota != null) return `★ ${Number(filme.nota).toFixed(1)}`;
+  if (filme.notaFaixa) return `★ ${filme.notaFaixa}`;
+  return '★ Sem nota';
 }
 
 function imagemComFallback(url, titulo) {
@@ -93,15 +99,18 @@ function renderizarFilmes() {
   lista.forEach(filme => {
     const card = document.createElement('article');
     card.className = 'movie-card';
+    const ano = filme.ano || 'Ano não informado';
+    const status = filme.status === 'não visto' ? '📌 Quero assistir' : '✓ Já assisti';
     card.innerHTML = `
       ${imagemComFallback(filme.capa, filme.titulo)}
       <div class="movie-info">
         <h3 class="movie-title" title="${escapeAttr(filme.titulo)}">${escapeHtml(filme.titulo)}</h3>
         <div class="movie-meta">
-          <span>${filme.ano}</span>
+          <span>${ano}</span>
           <span>•</span>
-          <span class="rating">★ ${Number(filme.nota).toFixed(1)}</span>
+          <span class="rating">${notaTexto(filme)}</span>
         </div>
+        <div class="movie-status">${status}</div>
         <div class="movie-actions">
           <button class="btn btn-secondary" data-details="${filme.id}">Detalhes</button>
           <a class="btn btn-primary" href="${escapeAttr(filme.assistir)}" target="_blank" rel="noopener noreferrer">Onde assistir</a>
@@ -131,11 +140,13 @@ function abrirDetalhes(id) {
   const filme = state.filmes.find(item => item.id === Number(id));
   if (!filme) return;
 
+  const ano = filme.ano || 'Ano não informado';
+  const status = filme.status === 'não visto' ? '📌 Quero assistir' : '✓ Já assisti';
   modalContent.innerHTML = `
     <div class="modal-hero">
       ${imagemComFallback(filme.capa, filme.titulo)}
       <div class="modal-copy">
-        <span class="eyebrow">${filme.ano} • ★ ${Number(filme.nota).toFixed(1)}</span>
+        <span class="eyebrow">${ano} • ${notaTexto(filme)} • ${status}</span>
         <h2 id="modalTitle">${escapeHtml(filme.titulo)}</h2>
         <div class="modal-tags">${(filme.generos || []).map(g => `<span class="modal-tag">${escapeHtml(g)}</span>`).join('')}</div>
         <p>${escapeHtml(filme.sinopse || 'Sem sinopse cadastrada.')}</p>
@@ -218,19 +229,5 @@ $('#resetFilters').addEventListener('click', () => {
   clearSearch.style.display = 'none';
   renderizarFilmes();
 });
-
-$('#modalClose').addEventListener('click', fecharModal);
-$('#modalBackdrop').addEventListener('click', fecharModal);
-document.addEventListener('keydown', (evento) => {
-  if (evento.key === 'Escape') fecharModal();
-});
-
-$('#mobileMenu').addEventListener('click', () => {
-  document.querySelector('.nav-links').classList.toggle('open');
-});
-
-document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', () => {
-  document.querySelector('.nav-links').classList.remove('open');
-}));
 
 carregarFilmes();
