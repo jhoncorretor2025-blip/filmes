@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo de filmes com informações, trailers e links para serviços de terceiros.">
+  <meta name="theme-color" content="#0b1020">
+  <title>CineLink — Catálogo de Filmes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="logo" href="#inicio" aria-label="CineLink início">
+        <span class="logo-mark">▶</span>
+        <span>Cine<span>Link</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="#inicio">Início</a>
+        <a href="#catalogo">Filmes</a>
+        <a href="#generos">Gêneros</a>
+      </nav>
+      <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menu">☰</button>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="container hero-content">
+        <div class="hero-copy">
+          <span class="eyebrow">🎬 Seu catálogo de filmes</span>
+          <h1>Encontre seu próximo filme favorito.</h1>
+          <p>Pesquise filmes, descubra novidades e encontre trailers e opções de onde assistir em serviços de terceiros.</p>
+          <div class="hero-search">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Buscar por título, gênero ou ano..." autocomplete="off">
+            <button id="clearSearch" type="button" aria-label="Limpar busca">×</button>
+          </div>
+          <div class="quick-tags" id="quickTags">
+            <button data-genre="Ação">Ação</button>
+            <button data-genre="Comédia">Comédia</button>
+            <button data-genre="Romance">Romance</button>
+            <button data-genre="Terror">Terror</button>
+          </div>
+        </div>
+        <div class="hero-poster" aria-hidden="true">
+          <div class="poster-glow"></div>
+          <div class="poster-card poster-back"></div>
+          <div class="poster-card poster-front">
+            <div class="poster-icon">▶</div>
+            <strong>CineLink</strong>
+            <small>Filmes & descobertas</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container section" id="catalogo">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">CATÁLOGO</span>
+          <h2>Filmes em destaque</h2>
+        </div>
+        <div class="controls">
+          <select id="genreFilter" aria-label="Filtrar por gênero">
+            <option value="Todos">Todos os gêneros</option>
+          </select>
+          <select id="sortFilter" aria-label="Ordenar filmes">
+            <option value="destaque">Em destaque</option>
+            <option value="recentes">Mais recentes</option>
+            <option value="nota">Melhor avaliados</option>
+            <option value="titulo">Título A–Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="resultsInfo" class="results-info"></div>
+      <div id="movieGrid" class="movie-grid" aria-live="polite"></div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">🔎</div>
+        <h3>Nenhum filme encontrado</h3>
+        <p>Tente outro título, gênero ou ano.</p>
+        <button id="resetFilters" class="btn btn-primary">Limpar filtros</button>
+      </div>
+    </section>
+
+    <section class="container section" id="generos">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">EXPLORE</span>
+          <h2>Escolha um gênero</h2>
+        </div>
+      </div>
+      <div id="genreCards" class="genre-grid"></div>
+    </section>
+  </main>
+
+  <div id="movieModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose" aria-label="Fechar">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <a class="logo" href="#inicio"><span class="logo-mark">▶</span><span>Cine<span>Link</span></span></a>
+        <p>Catálogo independente de informações e links externos.</p>
+      </div>
+      <div class="footer-note">
+        <strong>Importante</strong>
+        <p>O CineLink não hospeda filmes. Os botões de acesso direcionam para páginas e serviços de terceiros. Verifique a disponibilidade e os direitos de exibição no seu país.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
