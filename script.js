@@ -16,16 +16,16 @@ const sortFilter = $('#sortFilter');
 const genreCards = $('#genreCards');
 const modal = $('#movieModal');
 const modalContent = $('#modalContent');
+const navLinks = $('#navLinks');
 
 const genreMeta = {
-  'Ação': ['💥', 'Adrenalina e aventura'],
-  'Comédia': ['😂', 'Para dar boas risadas'],
+  'Ficção científica / Mente': ['🚀', 'Ideias, ciência e mente'],
+  'Drama / Emoção': ['🎭', 'Histórias marcantes'],
+  'Suspense / Terror': ['👻', 'Mistério e tensão'],
   'Romance': ['❤️', 'Histórias de amor'],
-  'Terror': ['👻', 'Arrepios garantidos'],
-  'Ficção científica': ['🚀', 'Mundos extraordinários'],
-  'Drama': ['🎭', 'Histórias marcantes'],
+  'Comédia': ['😂', 'Para dar boas risadas'],
+  'Ação': ['💥', 'Adrenalina e aventura'],
   'Aventura': ['🗺️', 'Grandes jornadas'],
-  'Suspense': ['🕵️', 'Mistério e tensão'],
   'Fantasia': ['🪄', 'Mundos mágicos']
 };
 
@@ -57,6 +57,22 @@ function montarFiltros() {
   });
 }
 
+function textoNota(filme) {
+  if (filme.notaFaixa) return filme.notaFaixa;
+  if (filme.nota === null || filme.nota === undefined || filme.nota === '') return 'Sem nota';
+  return Number(filme.nota).toFixed(1);
+}
+
+function textoAno(filme) {
+  return filme.ano ? filme.ano : 'Ano não informado';
+}
+
+function textoStatus(filme) {
+  if (filme.status === 'já visto') return '✓ Já assisti';
+  if (filme.status === 'não visto' || filme.status === 'quero assistir') return '📌 Quero assistir';
+  return filme.status || '';
+}
+
 function filmesFiltrados() {
   const termo = state.busca.trim().toLowerCase();
   let lista = state.filmes.filter(filme => {
@@ -67,22 +83,11 @@ function filmesFiltrados() {
   });
 
   if (state.ordenacao === 'recentes') lista.sort((a, b) => (b.ano || 0) - (a.ano || 0));
-  if (state.ordenacao === 'nota') lista.sort((a, b) => (b.nota || 0) - (a.nota || 0));
+  if (state.ordenacao === 'nota') lista.sort((a, b) => (Number(b.nota) || 0) - (Number(a.nota) || 0));
   if (state.ordenacao === 'titulo') lista.sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR'));
-  if (state.ordenacao === 'destaque') lista.sort((a, b) => Number(b.destaque) - Number(a.destaque) || (b.nota || 0) - (a.nota || 0));
+  if (state.ordenacao === 'destaque') lista.sort((a, b) => Number(b.destaque) - Number(a.destaque) || (Number(b.nota) || 0) - (Number(a.nota) || 0));
 
   return lista;
-}
-
-function notaTexto(filme) {
-  if (filme.nota != null) return `★ ${Number(filme.nota).toFixed(1)}`;
-  if (filme.notaFaixa) return `★ ${filme.notaFaixa}`;
-  return '★ Sem nota';
-}
-
-function imagemComFallback(url, titulo) {
-  if (!url) return `<div class="poster-fallback" aria-label="${escapeHtml(titulo)}">▶</div>`;
-  return `<img class="movie-poster" src="${escapeAttr(url)}" alt="Capa de ${escapeAttr(titulo)}" loading="lazy" onerror="this.outerHTML='<div class=\'poster-fallback\'>▶</div>'">`;
 }
 
 function renderizarFilmes() {
@@ -99,21 +104,21 @@ function renderizarFilmes() {
   lista.forEach(filme => {
     const card = document.createElement('article');
     card.className = 'movie-card';
-    const ano = filme.ano || 'Ano não informado';
-    const status = filme.status === 'não visto' ? '📌 Quero assistir' : '✓ Já assisti';
+    const nota = textoNota(filme);
+    const status = textoStatus(filme);
     card.innerHTML = `
-      ${imagemComFallback(filme.capa, filme.titulo)}
       <div class="movie-info">
         <h3 class="movie-title" title="${escapeAttr(filme.titulo)}">${escapeHtml(filme.titulo)}</h3>
+        ${status ? `<span class="movie-status">${escapeHtml(status)}</span>` : ''}
         <div class="movie-meta">
-          <span>${ano}</span>
+          <span>${escapeHtml(textoAno(filme))}</span>
           <span>•</span>
-          <span class="rating">${notaTexto(filme)}</span>
+          <span class="rating">★ ${escapeHtml(nota)}</span>
         </div>
-        <div class="movie-status">${status}</div>
+        <div class="movie-genres">${escapeHtml((filme.generos || []).join(' • '))}</div>
         <div class="movie-actions">
           <button class="btn btn-secondary" data-details="${filme.id}">Detalhes</button>
-          <a class="btn btn-primary" href="${escapeAttr(filme.assistir)}" target="_blank" rel="noopener noreferrer">Onde assistir</a>
+          <a class="btn btn-primary" href="${escapeAttr(filme.assistir || 'https://www.justwatch.com/br')}" target="_blank" rel="noopener noreferrer">Onde assistir</a>
         </div>
       </div>
     `;
@@ -140,20 +145,21 @@ function abrirDetalhes(id) {
   const filme = state.filmes.find(item => item.id === Number(id));
   if (!filme) return;
 
-  const ano = filme.ano || 'Ano não informado';
-  const status = filme.status === 'não visto' ? '📌 Quero assistir' : '✓ Já assisti';
+  const nota = textoNota(filme);
+  const status = textoStatus(filme);
+  const trailer = filme.trailer || `https://www.youtube.com/results?search_query=${encodeURIComponent(filme.titulo + ' trailer')}`;
+  const assistir = filme.assistir || 'https://www.justwatch.com/br';
+
   modalContent.innerHTML = `
-    <div class="modal-hero">
-      ${imagemComFallback(filme.capa, filme.titulo)}
-      <div class="modal-copy">
-        <span class="eyebrow">${ano} • ${notaTexto(filme)} • ${status}</span>
-        <h2 id="modalTitle">${escapeHtml(filme.titulo)}</h2>
-        <div class="modal-tags">${(filme.generos || []).map(g => `<span class="modal-tag">${escapeHtml(g)}</span>`).join('')}</div>
-        <p>${escapeHtml(filme.sinopse || 'Sem sinopse cadastrada.')}</p>
-        <div class="modal-actions">
-          <a class="btn btn-primary" href="${escapeAttr(filme.assistir)}" target="_blank" rel="noopener noreferrer">🔗 Onde assistir</a>
-          <a class="btn btn-secondary" href="${escapeAttr(filme.trailer)}" target="_blank" rel="noopener noreferrer">▶ Ver trailer</a>
-        </div>
+    <div class="modal-copy">
+      <span class="eyebrow">${escapeHtml(textoAno(filme))} • ★ ${escapeHtml(nota)}</span>
+      <h2 id="modalTitle">${escapeHtml(filme.titulo)}</h2>
+      ${status ? `<span class="movie-status">${escapeHtml(status)}</span>` : ''}
+      <div class="modal-tags">${(filme.generos || []).map(g => `<span class="modal-tag">${escapeHtml(g)}</span>`).join('')}</div>
+      <p>${escapeHtml(filme.sinopse || 'Sem sinopse cadastrada.')}</p>
+      <div class="modal-actions">
+        <a class="btn btn-primary" href="${escapeAttr(assistir)}" target="_blank" rel="noopener noreferrer">🔗 Onde assistir</a>
+        <a class="btn btn-secondary" href="${escapeAttr(trailer)}" target="_blank" rel="noopener noreferrer">▶ Ver trailer</a>
       </div>
     </div>
   `;
@@ -217,6 +223,12 @@ document.addEventListener('click', (evento) => {
     document.querySelector('#catalogo').scrollIntoView({ behavior: 'smooth' });
     renderizarFilmes();
   }
+
+  if (evento.target.id === 'modalClose' || evento.target.id === 'modalBackdrop') fecharModal();
+});
+
+document.addEventListener('keydown', (evento) => {
+  if (evento.key === 'Escape') fecharModal();
 });
 
 $('#resetFilters').addEventListener('click', () => {
@@ -229,5 +241,10 @@ $('#resetFilters').addEventListener('click', () => {
   clearSearch.style.display = 'none';
   renderizarFilmes();
 });
+
+if (navLinks && $('#mobileMenu')) {
+  $('#mobileMenu').addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.addEventListener('click', () => navLinks.classList.remove('open'));
+}
 
 carregarFilmes();
