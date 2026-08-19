@@ -8,56 +8,20 @@ function escapeHtml(v) { return String(v ?? '').replace(/[&<>\'\"]/g, c => ({'&'
 function escapeAttr(v) { return escapeHtml(v); }
 function normalizarGeneros(f) { return (Array.isArray(f.generos) ? f.generos : []).filter(g => !String(g).toLowerCase().startsWith('nota ')); }
 function todosGeneros() { return [...new Set(state.filmes.flatMap(normalizarGeneros))].filter(Boolean).sort((a,b)=>a.localeCompare(b,'pt-BR')); }
-function notaNumerica(f) {
-  if (f.nota !== null && f.nota !== undefined && f.nota !== '') { const n = Number(f.nota); if (Number.isFinite(n)) return n; }
-  if (f.notaFaixa) { const m = String(f.notaFaixa).replace(',','.').match(/\d+(?:\.\d+)?/); if (m) return Number(m[0]); }
-  return null;
-}
-function textoNota(f) { if (f.notaFaixa) return f.notaFaixa; const n=notaNumerica(f); return n===null?'Sem nota':n.toFixed(1); }
-function textoAno(f) { return f.ano || 'Ano não informado'; }
-function textoStatus(f) { if(f.status==='já visto') return '✓ Já assisti'; if(f.status==='não visto'||f.status==='quero assistir') return '📌 Quero assistir'; return f.status||''; }
-
-function montarFiltros() {
-  genreFilter.innerHTML = '<option value="Todos">🎭 Todos os gêneros</option>';
-  todosGeneros().forEach(g => { const o=document.createElement('option'); o.value=g; o.textContent=`🎭 ${g}`; genreFilter.appendChild(o); });
-}
-
-function filmesFiltrados() {
-  const termo=state.busca.trim().toLowerCase();
-  let lista=state.filmes.filter(f=>{
-    const gs=normalizarGeneros(f), texto=`${f.titulo||''} ${f.ano||''} ${gs.join(' ')} ${f.status||''}`.toLowerCase();
-    return (!termo||texto.includes(termo)) && (state.genero==='Todos'||gs.includes(state.genero));
-  });
-  if(state.ordenacao==='recentes') lista.sort((a,b)=>(Number(b.ano)||0)-(Number(a.ano)||0));
-  else if(state.ordenacao==='nota') lista.sort((a,b)=>(notaNumerica(b)??-1)-(notaNumerica(a)??-1));
-  else if(state.ordenacao==='titulo') lista.sort((a,b)=>String(a.titulo||'').localeCompare(String(b.titulo||''),'pt-BR'));
-  else lista.sort((a,b)=>Number(Boolean(b.destaque))-Number(Boolean(a.destaque))||(notaNumerica(b)??-1)-(notaNumerica(a)??-1));
-  return lista;
-}
-
-function renderizarFilmes() {
-  const lista=filmesFiltrados(); resultsInfo.textContent=`${lista.length} ${lista.length===1?'filme encontrado':'filmes encontrados'}`; movieGrid.innerHTML='';
-  if(!lista.length){emptyState.classList.remove('hidden');return;} emptyState.classList.add('hidden');
-  const frag=document.createDocumentFragment();
-  lista.forEach(f=>{const card=document.createElement('article'); card.className='movie-card'; const gs=normalizarGeneros(f), st=textoStatus(f);
-    card.innerHTML=`<div class="movie-info"><h3 class="movie-title" title="${escapeAttr(f.titulo||'')}">${escapeHtml(f.titulo||'Filme sem título')}</h3>${st?`<span class="movie-status">${escapeHtml(st)}</span>`:''}<div class="movie-meta"><span>${escapeHtml(textoAno(f))}</span><span>•</span><span class="rating">★ ${escapeHtml(textoNota(f))}</span></div><div class="movie-genres">${escapeHtml(gs.length?gs.join(' • '):'Gênero não informado')}</div><div class="movie-actions"><button class="btn btn-secondary" data-details="${Number(f.id)}">Detalhes</button><a class="btn btn-primary" href="${escapeAttr(f.assistir||'https://www.justwatch.com/br')}" target="_blank" rel="noopener noreferrer">Onde assistir</a></div></div>`;
-    frag.appendChild(card); });
-  movieGrid.appendChild(frag);
-}
-
-function renderizarGeneros() {
-  genreCards.innerHTML=todosGeneros().map(g=>{const q=state.filmes.filter(f=>normalizarGeneros(f).includes(g)).length;return `<button class="genre-card" data-genre-card="${escapeAttr(g)}"><span class="emoji">🎬</span><strong>${escapeHtml(g)}</strong><small>${q} ${q===1?'filme':'filmes'}</small></button>`;}).join('');
-}
-
-function abrirDetalhes(id){const f=state.filmes.find(x=>Number(x.id)===Number(id));if(!f)return;const gs=normalizarGeneros(f),tr=f.trailer||`https://www.youtube.com/results?search_query=${encodeURIComponent((f.titulo||'')+' trailer')}`,a=f.assistir||'https://www.justwatch.com/br';modalContent.innerHTML=`<div class="modal-copy"><span class="eyebrow">${escapeHtml(textoAno(f))} • ★ ${escapeHtml(textoNota(f))}</span><h2 id="modalTitle">${escapeHtml(f.titulo||'Filme')}</h2>${textoStatus(f)?`<span class="movie-status">${escapeHtml(textoStatus(f))}</span>`:''}<div class="modal-tags">${gs.map(g=>`<span class="modal-tag">${escapeHtml(g)}</span>`).join('')}</div><p>${escapeHtml(f.sinopse||'Sem sinopse cadastrada.')}</p><div class="modal-actions"><a class="btn btn-primary" href="${escapeAttr(a)}" target="_blank" rel="noopener noreferrer">🔗 Onde assistir</a><a class="btn btn-secondary" href="${escapeAttr(tr)}" target="_blank" rel="noopener noreferrer">▶ Ver trailer</a></div></div>`;modal.classList.remove('hidden');document.body.style.overflow='hidden';}
+function notaNumerica(f) { if (f.nota !== null && f.nota !== undefined && f.nota !== '') { const n=Number(f.nota); if(Number.isFinite(n)) return n; } if(f.notaFaixa){const m=String(f.notaFaixa).replace(',','.').match(/\d+(?:\.\d+)?/);if(m)return Number(m[0]);} return null; }
+function textoNota(f) { if(f.notaFaixa)return f.notaFaixa; const n=notaNumerica(f); return n===null?'Sem nota':n.toFixed(1); }
+function textoAno(f) { return f.ano ? String(f.ano) : ''; }
+function textoStatus(f) { if(f.status==='já visto')return '✓ Já assisti'; if(f.status==='não visto'||f.status==='quero assistir')return '📌 Quero assistir'; return f.status||''; }
+function montarFiltros(){genreFilter.innerHTML='<option value="Todos">🎭 Todos os gêneros</option>';todosGeneros().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=`🎭 ${g}`;genreFilter.appendChild(o);});}
+function filmesFiltrados(){const termo=state.busca.trim().toLowerCase();let lista=state.filmes.filter(f=>{const gs=normalizarGeneros(f),texto=`${f.titulo||''} ${f.ano||''} ${gs.join(' ')} ${f.status||''}`.toLowerCase();return(!termo||texto.includes(termo))&&(state.genero==='Todos'||gs.includes(state.genero));});if(state.ordenacao==='recentes')lista.sort((a,b)=>(Number(b.ano)||0)-(Number(a.ano)||0));else if(state.ordenacao==='nota')lista.sort((a,b)=>(notaNumerica(b)??-1)-(notaNumerica(a)??-1));else if(state.ordenacao==='titulo')lista.sort((a,b)=>String(a.titulo||'').localeCompare(String(b.titulo||''),'pt-BR'));else lista.sort((a,b)=>Number(Boolean(b.destaque))-Number(Boolean(a.destaque))||(notaNumerica(b)??-1)-(notaNumerica(a)??-1));return lista;}
+function renderizarFilmes(){const lista=filmesFiltrados();resultsInfo.textContent=`${lista.length} ${lista.length===1?'filme encontrado':'filmes encontrados'}`;movieGrid.innerHTML='';if(!lista.length){emptyState.classList.remove('hidden');return;}emptyState.classList.add('hidden');const frag=document.createDocumentFragment();lista.forEach(f=>{const card=document.createElement('article');card.className='movie-card';const gs=normalizarGeneros(f),st=textoStatus(f),ano=textoAno(f),nota=textoNota(f);const meta=[ano,`★ ${nota}`].filter(Boolean).join(' • ');card.innerHTML=`<div class="movie-info"><h3 class="movie-title" title="${escapeAttr(f.titulo||'')}">${escapeHtml(f.titulo||'Filme sem título')}</h3>${st?`<span class="movie-status">${escapeHtml(st)}</span>`:''}<div class="movie-meta">${escapeHtml(meta)}</div><div class="movie-genres">${escapeHtml(gs.length?gs.join(' • '):'Gênero não informado')}</div><div class="movie-actions"><button class="btn btn-secondary" data-details="${Number(f.id)}">Detalhes</button><a class="btn btn-primary" href="${escapeAttr(f.assistir||'https://www.justwatch.com/br')}" target="_blank" rel="noopener noreferrer">Onde assistir</a></div></div>`;frag.appendChild(card);});movieGrid.appendChild(frag);}
+function renderizarGeneros(){genreCards.innerHTML=todosGeneros().map(g=>{const q=state.filmes.filter(f=>normalizarGeneros(f).includes(g)).length;return `<button class="genre-card" data-genre-card="${escapeAttr(g)}"><span class="emoji">🎬</span><strong>${escapeHtml(g)}</strong><small>${q} ${q===1?'filme':'filmes'}</small></button>`;}).join('');}
+function abrirDetalhes(id){const f=state.filmes.find(x=>Number(x.id)===Number(id));if(!f)return;const gs=normalizarGeneros(f),tr=f.trailer||`https://www.youtube.com/results?search_query=${encodeURIComponent((f.titulo||'')+' trailer')}`,a=f.assistir||'https://www.justwatch.com/br',ano=textoAno(f),nota=textoNota(f),cabecalho=[ano,`★ ${nota}`].filter(Boolean).join(' • ');modalContent.innerHTML=`<div class="modal-copy"><span class="eyebrow">${escapeHtml(cabecalho)}</span><h2 id="modalTitle">${escapeHtml(f.titulo||'Filme')}</h2>${textoStatus(f)?`<span class="movie-status">${escapeHtml(textoStatus(f))}</span>`:''}<div class="modal-tags">${gs.map(g=>`<span class="modal-tag">${escapeHtml(g)}</span>`).join('')}</div><p>${escapeHtml(f.sinopse||'Sem sinopse cadastrada.')}</p><div class="modal-actions"><a class="btn btn-primary" href="${escapeAttr(a)}" target="_blank" rel="noopener noreferrer">🔗 Onde assistir</a><a class="btn btn-secondary" href="${escapeAttr(tr)}" target="_blank" rel="noopener noreferrer">▶ Ver trailer</a></div></div>`;modal.classList.remove('hidden');document.body.style.overflow='hidden';}
 function fecharModal(){modal.classList.add('hidden');document.body.style.overflow='';}
-
 async function carregarFilmes(){try{const r=await fetch(`filmes.json?v=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);const d=await r.json();if(!Array.isArray(d))throw new Error('Formato inválido');state.filmes=d;montarFiltros();renderizarGeneros();renderizarFilmes();}catch(e){console.error(e);resultsInfo.textContent='Erro ao carregar o catálogo';movieGrid.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Não foi possível carregar os filmes</h3><p>Atualize a página com Ctrl + F5. Se continuar, o arquivo filmes.json precisa ser revisado.</p></div>';}}
-
 searchInput.addEventListener('input',e=>{state.busca=e.target.value;clearSearch.style.display=state.busca?'block':'none';renderizarFilmes();});
 clearSearch.addEventListener('click',()=>{searchInput.value='';state.busca='';clearSearch.style.display='none';renderizarFilmes();searchInput.focus();});
-genreFilter.addEventListener('change',e=>{state.genero=e.target.value;renderizarFilmes();});
-sortFilter.addEventListener('change',e=>{state.ordenacao=e.target.value;renderizarFilmes();});
+genreFilter.addEventListener('change',e=>{state.genero=e.target.value;renderizarFilmes();});sortFilter.addEventListener('change',e=>{state.ordenacao=e.target.value;renderizarFilmes();});
 document.addEventListener('click',e=>{const d=e.target.closest('[data-details]');if(d)abrirDetalhes(d.dataset.details);const g=e.target.closest('[data-genre]');if(g){state.genero=g.dataset.genre;genreFilter.value=state.genero;$('#catalogo').scrollIntoView({behavior:'smooth'});renderizarFilmes();}const gc=e.target.closest('[data-genre-card]');if(gc){state.genero=gc.dataset.genreCard;genreFilter.value=state.genero;$('#catalogo').scrollIntoView({behavior:'smooth'});renderizarFilmes();}if(e.target.id==='modalClose'||e.target.id==='modalBackdrop')fecharModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharModal();});
 $('#resetFilters').addEventListener('click',()=>{state.busca='';state.genero='Todos';state.ordenacao='destaque';searchInput.value='';genreFilter.value='Todos';sortFilter.value='destaque';clearSearch.style.display='none';renderizarFilmes();});
