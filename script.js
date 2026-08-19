@@ -2,7 +2,6 @@ const state = {
   filmes: [],
   busca: '',
   genero: 'Todos',
-  nota: 'Todas',
   ordenacao: 'destaque'
 };
 
@@ -13,7 +12,6 @@ const resultsInfo = $('#resultsInfo');
 const searchInput = $('#searchInput');
 const clearSearch = $('#clearSearch');
 const genreFilter = $('#genreFilter');
-const ratingFilter = $('#ratingFilter');
 const sortFilter = $('#sortFilter');
 const genreCards = $('#genreCards');
 const modal = $('#movieModal');
@@ -88,28 +86,13 @@ function textoStatus(filme) {
   return filme.status || '';
 }
 
-function bateFiltroNota(filme) {
-  if (state.nota === 'Todas') return true;
-  const nota = notaNumerica(filme);
-
-  if (state.nota === 'sem') return nota === null;
-  if (nota === null) return false;
-  if (state.nota === '10') return nota >= 9.95;
-  if (state.nota === '9') return nota >= 9 && nota < 9.95;
-  if (state.nota === '8') return nota >= 8 && nota < 9;
-  if (state.nota === '7') return nota >= 7 && nota < 8;
-  if (state.nota === 'abaixo7') return nota < 7;
-  return true;
-}
-
 function filmesFiltrados() {
   const termo = state.busca.trim().toLowerCase();
   let lista = state.filmes.filter(filme => {
     const texto = `${filme.titulo} ${filme.ano || ''} ${(filme.generos || []).join(' ')} ${filme.status || ''}`.toLowerCase();
     const bateBusca = !termo || texto.includes(termo);
     const bateGenero = state.genero === 'Todos' || (filme.generos || []).includes(state.genero);
-    const bateNota = bateFiltroNota(filme);
-    return bateBusca && bateGenero && bateNota;
+    return bateBusca && bateGenero;
   });
 
   if (state.ordenacao === 'recentes') lista.sort((a, b) => (b.ano || 0) - (a.ano || 0));
@@ -229,11 +212,6 @@ genreFilter.addEventListener('change', (evento) => {
   renderizarFilmes();
 });
 
-ratingFilter.addEventListener('change', (evento) => {
-  state.nota = evento.target.value;
-  renderizarFilmes();
-});
-
 sortFilter.addEventListener('change', (evento) => {
   state.ordenacao = evento.target.value;
   renderizarFilmes();
@@ -269,11 +247,9 @@ document.addEventListener('keydown', (evento) => {
 $('#resetFilters').addEventListener('click', () => {
   state.busca = '';
   state.genero = 'Todos';
-  state.nota = 'Todas';
   state.ordenacao = 'destaque';
   searchInput.value = '';
   genreFilter.value = 'Todos';
-  ratingFilter.value = 'Todas';
   sortFilter.value = 'destaque';
   clearSearch.style.display = 'none';
   renderizarFilmes();
