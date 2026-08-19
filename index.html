@@ -62,7 +62,16 @@
         </div>
         <div class="controls">
           <select id="genreFilter" aria-label="Filtrar por gênero">
-            <option value="Todos">Todos os gêneros</option>
+            <option value="Todos">🎭 Todos os gêneros</option>
+          </select>
+          <select id="ratingFilter" aria-label="Filtrar por nota">
+            <option value="Todas">⭐ Todas as notas</option>
+            <option value="10">⭐ Nota 10</option>
+            <option value="9">⭐ 9 a 9,9</option>
+            <option value="8">⭐ 8 a 8,9</option>
+            <option value="7">⭐ 7 a 7,9</option>
+            <option value="abaixo7">⭐ Abaixo de 7</option>
+            <option value="sem">⭐ Sem nota</option>
           </select>
           <select id="sortFilter" aria-label="Ordenar filmes">
             <option value="destaque">Em destaque</option>
@@ -78,7 +87,7 @@
       <div id="emptyState" class="empty-state hidden">
         <div class="empty-icon">🔎</div>
         <h3>Nenhum filme encontrado</h3>
-        <p>Tente outro título, gênero ou ano.</p>
+        <p>Tente outro título, gênero ou nota.</p>
         <button id="resetFilters" class="btn btn-primary">Limpar filtros</button>
       </div>
     </section>
