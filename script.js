@@ -2,6 +2,7 @@ const state = {
   filmes: [],
   busca: '',
   genero: 'Todos',
+  nota: 'Todas',
   ordenacao: 'destaque'
 };
 
@@ -12,6 +13,7 @@ const resultsInfo = $('#resultsInfo');
 const searchInput = $('#searchInput');
 const clearSearch = $('#clearSearch');
 const genreFilter = $('#genreFilter');
+const ratingFilter = $('#ratingFilter');
 const sortFilter = $('#sortFilter');
 const genreCards = $('#genreCards');
 const modal = $('#movieModal');
@@ -48,19 +50,32 @@ function todosGeneros() {
 }
 
 function montarFiltros() {
-  genreFilter.innerHTML = '<option value="Todos">Todos os gêneros</option>';
+  genreFilter.innerHTML = '<option value="Todos">🎭 Todos os gêneros</option>';
   todosGeneros().forEach(genero => {
     const option = document.createElement('option');
     option.value = genero;
-    option.textContent = genero;
+    option.textContent = `🎭 ${genero}`;
     genreFilter.appendChild(option);
   });
 }
 
+function notaNumerica(filme) {
+  if (filme.nota !== null && filme.nota !== undefined && filme.nota !== '') {
+    const n = Number(filme.nota);
+    return Number.isFinite(n) ? n : null;
+  }
+  if (filme.notaFaixa) {
+    const match = String(filme.notaFaixa).replace(',', '.').match(/\d+(?:\.\d+)?/);
+    if (match) return Number(match[0]);
+  }
+  return null;
+}
+
 function textoNota(filme) {
   if (filme.notaFaixa) return filme.notaFaixa;
-  if (filme.nota === null || filme.nota === undefined || filme.nota === '') return 'Sem nota';
-  return Number(filme.nota).toFixed(1);
+  const nota = notaNumerica(filme);
+  if (nota === null) return 'Sem nota';
+  return nota.toFixed(1);
 }
 
 function textoAno(filme) {
@@ -73,19 +88,34 @@ function textoStatus(filme) {
   return filme.status || '';
 }
 
+function bateFiltroNota(filme) {
+  if (state.nota === 'Todas') return true;
+  const nota = notaNumerica(filme);
+
+  if (state.nota === 'sem') return nota === null;
+  if (nota === null) return false;
+  if (state.nota === '10') return nota >= 9.95;
+  if (state.nota === '9') return nota >= 9 && nota < 9.95;
+  if (state.nota === '8') return nota >= 8 && nota < 9;
+  if (state.nota === '7') return nota >= 7 && nota < 8;
+  if (state.nota === 'abaixo7') return nota < 7;
+  return true;
+}
+
 function filmesFiltrados() {
   const termo = state.busca.trim().toLowerCase();
   let lista = state.filmes.filter(filme => {
     const texto = `${filme.titulo} ${filme.ano || ''} ${(filme.generos || []).join(' ')} ${filme.status || ''}`.toLowerCase();
     const bateBusca = !termo || texto.includes(termo);
     const bateGenero = state.genero === 'Todos' || (filme.generos || []).includes(state.genero);
-    return bateBusca && bateGenero;
+    const bateNota = bateFiltroNota(filme);
+    return bateBusca && bateGenero && bateNota;
   });
 
   if (state.ordenacao === 'recentes') lista.sort((a, b) => (b.ano || 0) - (a.ano || 0));
-  if (state.ordenacao === 'nota') lista.sort((a, b) => (Number(b.nota) || 0) - (Number(a.nota) || 0));
+  if (state.ordenacao === 'nota') lista.sort((a, b) => (notaNumerica(b) || 0) - (notaNumerica(a) || 0));
   if (state.ordenacao === 'titulo') lista.sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR'));
-  if (state.ordenacao === 'destaque') lista.sort((a, b) => Number(b.destaque) - Number(a.destaque) || (Number(b.nota) || 0) - (Number(a.nota) || 0));
+  if (state.ordenacao === 'destaque') lista.sort((a, b) => Number(b.destaque) - Number(a.destaque) || (notaNumerica(b) || 0) - (notaNumerica(a) || 0));
 
   return lista;
 }
@@ -199,6 +229,11 @@ genreFilter.addEventListener('change', (evento) => {
   renderizarFilmes();
 });
 
+ratingFilter.addEventListener('change', (evento) => {
+  state.nota = evento.target.value;
+  renderizarFilmes();
+});
+
 sortFilter.addEventListener('change', (evento) => {
   state.ordenacao = evento.target.value;
   renderizarFilmes();
@@ -234,9 +269,11 @@ document.addEventListener('keydown', (evento) => {
 $('#resetFilters').addEventListener('click', () => {
   state.busca = '';
   state.genero = 'Todos';
+  state.nota = 'Todas';
   state.ordenacao = 'destaque';
   searchInput.value = '';
   genreFilter.value = 'Todos';
+  ratingFilter.value = 'Todas';
   sortFilter.value = 'destaque';
   clearSearch.style.display = 'none';
   renderizarFilmes();
